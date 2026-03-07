@@ -1,0 +1,48 @@
+.navbar{
+display:flex;
+justify-content:space-between;
+padding:15px 40px;
+background:white;
+border-bottom:1px solid #eee;
+}
+
+.nav-right input{
+padding:8px;
+border:1px solid #ddd;
+border-radius:6px;
+}
+
+.new-btn{
+background:#5b3df5;
+color:white;
+border:none;
+padding:8px 12px;
+border-radius:6px;
+}
+
+.tabs{
+padding:20px 40px;
+}
+
+.tabs button{
+margin-right:10px;
+padding:8px 15px;
+border:1px solid #ddd;
+background:white;
+border-radius:6px;
+cursor:pointer;
+}
+
+.issues-grid{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:20px;
+padding:20px 40px;
+}
+
+.card{
+background:white;
+padding:15px;
+border-radius:10px;
+box-shadow:0 5px 20px rgba(0,0,0,0.05);
+}
