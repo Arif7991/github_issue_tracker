@@ -13,7 +13,7 @@ const searchInput = document.getElementById('search-input');
 const searchBtn = document.getElementById('search-btn');
 const modal = document.getElementById('issue-modal');
 const modalContent = document.getElementById('modal-content');
-const closeModalBtn = document.getElementById('close-modal');
+
 
 // ==================== Utility Functions ====================
 function showLoading() { loadingSpinner.classList.remove('hidden'); }
@@ -208,14 +208,14 @@ function openModal(issueId) {
             
             <!-- Status line: Opened by and date -->
             <div class="flex items-center text-sm text-gray-600">
-                <span class="font-medium mr-2">${statusText}</span>
+                <span class="bg-green-700 text-white py-2 px-4 rounded-full font-medium mr-2">${statusText}</span>
                 <span>by ${issue.author || 'unknown'}</span>
                 <span class="mx-2">•</span>
                 <span>${formatDate(issue.createdAt)}</span>
             </div>
             
             <!-- Labels -->
-            <div class="flex flex-wrap gap-1">
+            <div class="flex uppercase flex-wrap gap-1">
                 ${labelsHtml}
             </div>
             
@@ -223,20 +223,21 @@ function openModal(issueId) {
             <p class="text-gray-700 text-sm leading-relaxed">${issue.description || 'No description provided.'}</p>
             
             <!-- Assignee & Priority (two columns) -->
-            <div class="grid grid-cols-2 gap-4 border-t pt-4">
+            <div class="grid items-center grid-cols-2 gap-4 py-4 pl-3
+             bg-gray-100 ">
                 <div>
-                    <p class="text-xs text-gray-500 uppercase tracking-wider">Assignee</p>
+                    <p class="text-xs text-gray-500 tracking-wider">Assignee</p>
                     <p class="font-medium text-gray-800">${issue.assignee || 'Unassigned'}</p>
                 </div>
                 <div>
-                    <p class="text-xs text-gray-500 uppercase tracking-wider">Priority</p>
+                    <p class="text-xs text-gray-700 tracking-wider">Priority</p>
                     <p class="font-medium" style="color: ${priorityColor};">${issue.priority?.toUpperCase() || 'N/A'}</p>
                 </div>
             </div>
             
-            <!-- Close button (optional, we already have X) -->
+            <!-- Close -->
             <div class="flex justify-end">
-                <button id="modal-close-btn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition">Close</button>
+                <button id="modal-close-btn" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Close</button>
             </div>
         </div>
     `;
@@ -268,9 +269,7 @@ searchInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') searchBtn.click();
 });
 
-closeModalBtn.addEventListener('click', () => {
-    modal.classList.add('hidden');
-});
+
 
 window.addEventListener('click', (e) => {
     if (e.target === modal) modal.classList.add('hidden');
