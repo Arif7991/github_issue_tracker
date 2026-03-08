@@ -151,7 +151,7 @@ function displayIssues() {
         // স্ট্যাটাস অনুযায়ী আইকন নির্বাচন
         const statusIcon = issue.status?.toLowerCase() === 'open' 
             ? '<img src="./assets/Open-Status.png" alt="Open" class="w-6 h-6">' 
-            : '<img src="./assets/Closed-Status.png" alt="Closed" class="w-6 h-6">';
+            : '<img src="./assets/Closed- Status .png" alt="Closed" class="w-6 h-6">';
         
         return `
             <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition cursor-pointer issue-card" data-issue-id="${issue.id}">
@@ -172,7 +172,7 @@ function displayIssues() {
                     <p class="text-gray-600 text-sm mb-3">${issue.description?.substring(0, 60) || 'No description.'}...</p>
                     
                     <!-- লেবেল কালারফুল চিপস -->
-                    <div class="mb-4 flex flex-wrap gap-2">
+                    <div class="uppercase mb-4 flex flex-wrap gap-2">
                         ${labelsHtml}
                     </div>
                     
@@ -192,7 +192,7 @@ function displayIssues() {
     });
 }
 
-// ==================== Modal (New Design) ====================
+// ==================== Modal ====================
 function openModal(issueId) {
     const issue = allIssues.find(i => i.id == issueId);
     if (!issue) return;
