@@ -23,10 +23,10 @@ function setActiveTab(tabId) {
     tabButtons.forEach(btn => {
         const btnTab = btn.dataset.tab;
         if (btnTab === tabId) {
-            btn.classList.add('text-blue-600', 'border-b-2', 'border-blue-600', 'active');
+            btn.classList.add('text-white', 'border-b-2', 'bg-blue-600', 'active');
             btn.classList.remove('text-gray-500');
         } else {
-            btn.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600', 'active');
+            btn.classList.remove('text-white', 'border-b-2', 'bg-blue-600', 'active');
             btn.classList.add('text-gray-500');
         }
     });
@@ -39,7 +39,7 @@ function formatDate(dateString) {
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const year = date.getFullYear();
-    return `${day}/${month}/${year}`; // DD/MM/YYYY format like image
+    return `${day}/${month}/${year}`; 
 }
 
 function getStatusBorderClass(status) {
@@ -48,10 +48,10 @@ function getStatusBorderClass(status) {
 
 function getPriorityColor(priority) {
     switch(priority?.toLowerCase()) {
-        case 'high': return '#ef4444'; // red
-        case 'medium': return '#f59e0b'; // amber
-        case 'low': return '#10b981'; // green
-        default: return '#6b7280'; // gray
+        case 'high': return '#ef4444'; 
+        case 'medium': return '#f59e0b'; 
+        case 'low': return '#10b981'; 
+        default: return '#6b7280'; 
     }
 }
 
@@ -61,7 +61,7 @@ function renderLabels(labels) {
     
     const labelColors = {
         'bug': 'bg-red-100 text-red-800 border-red-200',
-        'help wanted': 'bg-blue-100 text-blue-800 border-blue-200',
+        'help wanted': 'bg-yellow-100 text-yellow-800 border-blue-200',
         'feature': 'bg-green-100 text-green-800 border-green-200',
         'documentation': 'bg-purple-100 text-purple-800 border-purple-200',
         'enhancement': 'bg-indigo-100 text-indigo-800 border-indigo-200',
