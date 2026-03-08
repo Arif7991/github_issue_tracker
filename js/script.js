@@ -23,10 +23,10 @@ function setActiveTab(tabId) {
     tabButtons.forEach(btn => {
         const btnTab = btn.dataset.tab;
         if (btnTab === tabId) {
-            btn.classList.add('text-blue-600', 'border-b-2', 'border-blue-600', 'active');
+            btn.classList.add('text-white', 'border-b-2', 'bg-blue-600', 'border-blue-600', 'active');
             btn.classList.remove('text-gray-500');
         } else {
-            btn.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600', 'active');
+            btn.classList.remove('text-white', 'border-b-2', 'bg-blue-600', 'border-blue-600', 'active');
             btn.classList.add('text-gray-500');
         }
     });
@@ -130,42 +130,49 @@ function displayIssues() {
         return;
     }
 
-    grid.innerHTML = filteredIssues.map(issue => {
-        const priorityColor = getPriorityColor(issue.priority);
-        const labelsHtml = renderLabels(issue.labels);
-        
-        return `
-            <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition cursor-pointer issue-card" data-issue-id="${issue.id}">
-                <div class="border-t-4 ${getStatusBorderClass(issue.status)} p-4">
-                    <!-- প্রথম লাইন: আইকন + প্রায়োরিটি (ডান পাশে) -->
-                    <div class="flex justify-between items-center mb-3">
-                        <span class="text-2xl text-gray-600">📋</span> <!-- আইকন -->
-                        <span class="text-xs font-bold uppercase px-2 py-1 rounded" 
-                              style="background-color: ${priorityColor}20; color: ${priorityColor}; border: 1px solid ${priorityColor}40;">
-                            ${issue.priority?.toUpperCase() || 'N/A'}
-                        </span>
-                    </div>
-                    
-                    <!-- টাইটেল -->
-                    <h3 class="font-bold text-lg mb-2">${issue.title || 'Untitled'}</h3>
-                    
-                    <!-- ডেসক্রিপশন (... সহ) -->
-                    <p class="text-gray-600 text-sm mb-3">${issue.description?.substring(0, 60) || 'No description.'}...</p>
-                    
-                    <!-- লেবেল কালারফুল চিপস -->
-                    <div class="mb-4 flex flex-wrap gap-2">
-                        ${labelsHtml}
-                    </div>
-                    
-                    <!-- ফুটার: দুই লাইনে -->
-                    <div class="text-xs text-gray-500 border-t pt-3">
-                        <div class="font-medium mb-1">#${issue.id} by ${issue.author || 'unknown'}</div>
-                        <div>${formatDate(issue.createdAt)}</div>
-                    </div>
+    // displayIssues ফাংশনের ভিতরে map এর মধ্যে এই অংশটুকু পরিবর্তন করুন
+
+grid.innerHTML = filteredIssues.map(issue => {
+    const priorityColor = getPriorityColor(issue.priority);
+    const labelsHtml = renderLabels(issue.labels);
+    
+    // স্ট্যাটাস অনুযায়ী আইকন নির্ধারণ
+    const statusIcon = issue.status?.toLowerCase() === 'open' 
+        ? '<img src="./assets/Open-Status.png" alt="Open" class="h-6 w-6">' 
+        : '<img src="./assets/Closed-Status.png" alt="Closed" class="h-6 w-6">';
+    
+    return `
+        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition cursor-pointer issue-card" data-issue-id="${issue.id}">
+            <div class="border-t-4 ${getStatusBorderClass(issue.status)} p-4">
+                <!-- প্রথম লাইন: স্ট্যাটাস আইকন (বামে) + প্রায়োরিটি (ডানে) -->
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-2xl text-gray-600">${statusIcon}</span>
+                    <span class="text-xs font-bold uppercase px-2 py-1 rounded" 
+                          style="background-color: ${priorityColor}20; color: ${priorityColor}; border: 1px solid ${priorityColor}40;">
+                        ${issue.priority?.toUpperCase() || 'N/A'}
+                    </span>
+                </div>
+                
+                <!-- টাইটেল -->
+                <h3 class="font-bold text-lg mb-2">${issue.title || 'Untitled'}</h3>
+                
+                <!-- ডেসক্রিপশন -->
+                <p class="text-gray-600 text-sm mb-3">${issue.description?.substring(0, 60) || 'No description.'}...</p>
+                
+                <!-- লেবেল -->
+                <div class="mb-4 flex flex-wrap gap-2">
+                    ${labelsHtml}
+                </div>
+                
+                <!-- ফুটার: দুই লাইনে -->
+                <div class="text-xs text-gray-500 border-t pt-3">
+                    <div class="font-medium mb-1">#${issue.id} by ${issue.author || 'unknown'}</div>
+                    <div>${formatDate(issue.createdAt)}</div>
                 </div>
             </div>
-        `;
-    }).join('');
+        </div>
+    `;
+}).join('');
 
     // Attach click event to each card
     document.querySelectorAll('.issue-card').forEach(card => {
