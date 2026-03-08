@@ -23,10 +23,10 @@ function setActiveTab(tabId) {
     tabButtons.forEach(btn => {
         const btnTab = btn.dataset.tab;
         if (btnTab === tabId) {
-            btn.classList.add('text-white', 'border-b-2', 'bg-blue-600', 'border-blue-600', 'active');
+            btn.classList.add('text-blue-600', 'border-b-2', 'border-blue-600', 'active');
             btn.classList.remove('text-gray-500');
         } else {
-            btn.classList.remove('text-white', 'border-b-2', 'bg-blue-600', 'border-blue-600', 'active');
+            btn.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600', 'active');
             btn.classList.add('text-gray-500');
         }
     });
@@ -36,7 +36,10 @@ function formatDate(dateString) {
     if (!dateString) return 'N/A';
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return 'N/A';
-    return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`; // MM/DD/YYYY
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`; // DD/MM/YYYY format like image
 }
 
 function getStatusBorderClass(status) {
@@ -52,12 +55,24 @@ function getPriorityColor(priority) {
     }
 }
 
-// labels array কে HTML চিপস এ রূপান্তর
+// লেবেল কালারফুল চিপস
 function renderLabels(labels) {
     if (!labels || labels.length === 0) return '';
-    return labels.map(label => 
-        `<span class="bg-gray-200 text-gray-700 text-xs font-semibold px-2 py-1 rounded mr-1">${label}</span>`
-    ).join('');
+    
+    const labelColors = {
+        'bug': 'bg-red-100 text-red-800 border-red-200',
+        'help wanted': 'bg-blue-100 text-blue-800 border-blue-200',
+        'feature': 'bg-green-100 text-green-800 border-green-200',
+        'documentation': 'bg-purple-100 text-purple-800 border-purple-200',
+        'enhancement': 'bg-indigo-100 text-indigo-800 border-indigo-200',
+        'question': 'bg-yellow-100 text-yellow-800 border-yellow-200'
+    };
+    
+    return labels.map(label => {
+        const labelLower = label.toLowerCase();
+        const colorClass = labelColors[labelLower] || 'bg-gray-100 text-gray-800 border-gray-200';
+        return `<span class="${colorClass} text-xs font-semibold px-3 py-1.5 rounded-full border mr-1">${label}</span>`;
+    }).join('');
 }
 
 // ==================== API Calls ====================
@@ -113,7 +128,6 @@ async function searchIssues(query) {
 }
 
 // ==================== Display Issues ====================
-// ==================== Display Issues ====================
 function displayIssues() {
     let filteredIssues = allIssues;
     
@@ -130,49 +144,47 @@ function displayIssues() {
         return;
     }
 
-    // displayIssues ফাংশনের ভিতরে map এর মধ্যে এই অংশটুকু পরিবর্তন করুন
-
-grid.innerHTML = filteredIssues.map(issue => {
-    const priorityColor = getPriorityColor(issue.priority);
-    const labelsHtml = renderLabels(issue.labels);
-    
-    // স্ট্যাটাস অনুযায়ী আইকন নির্ধারণ
-    const statusIcon = issue.status?.toLowerCase() === 'open' 
-        ? '<img src="./assets/Open-Status.png" alt="Open" class="h-6 w-6">' 
-        : '<img src="./assets/Closed-Status.png" alt="Closed" class="h-6 w-6">';
-    
-    return `
-        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition cursor-pointer issue-card" data-issue-id="${issue.id}">
-            <div class="border-t-4 ${getStatusBorderClass(issue.status)} p-4">
-                <!-- প্রথম লাইন: স্ট্যাটাস আইকন (বামে) + প্রায়োরিটি (ডানে) -->
-                <div class="flex justify-between items-center mb-3">
-                    <span class="text-2xl text-gray-600">${statusIcon}</span>
-                    <span class="text-xs font-bold uppercase px-2 py-1 rounded" 
-                          style="background-color: ${priorityColor}20; color: ${priorityColor}; border: 1px solid ${priorityColor}40;">
-                        ${issue.priority?.toUpperCase() || 'N/A'}
-                    </span>
-                </div>
-                
-                <!-- টাইটেল -->
-                <h3 class="font-bold text-lg mb-2">${issue.title || 'Untitled'}</h3>
-                
-                <!-- ডেসক্রিপশন -->
-                <p class="text-gray-600 text-sm mb-3">${issue.description?.substring(0, 60) || 'No description.'}...</p>
-                
-                <!-- লেবেল -->
-                <div class="mb-4 flex flex-wrap gap-2">
-                    ${labelsHtml}
-                </div>
-                
-                <!-- ফুটার: দুই লাইনে -->
-                <div class="text-xs text-gray-500 border-t pt-3">
-                    <div class="font-medium mb-1">#${issue.id} by ${issue.author || 'unknown'}</div>
-                    <div>${formatDate(issue.createdAt)}</div>
+    grid.innerHTML = filteredIssues.map(issue => {
+        const priorityColor = getPriorityColor(issue.priority);
+        const labelsHtml = renderLabels(issue.labels);
+        
+        // স্ট্যাটাস অনুযায়ী আইকন নির্বাচন
+        const statusIcon = issue.status?.toLowerCase() === 'open' 
+            ? '<img src="./assets/Open-Status.png" alt="Open" class="w-6 h-6">' 
+            : '<img src="./assets/Closed-Status.png" alt="Closed" class="w-6 h-6">';
+        
+        return `
+            <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition cursor-pointer issue-card" data-issue-id="${issue.id}">
+                <div class="border-t-4 ${getStatusBorderClass(issue.status)} p-4">
+                    <!-- প্রথম লাইন: স্ট্যাটাস আইকন (বামে) + প্রায়োরিটি (ডানে) -->
+                    <div class="flex justify-between items-center mb-3">
+                        ${statusIcon}
+                        <span class="text-xs font-bold uppercase px-2 py-1 rounded" 
+                              style="background-color: ${priorityColor}20; color: ${priorityColor}; border: 1px solid ${priorityColor}40;">
+                            ${issue.priority?.toUpperCase() || 'N/A'}
+                        </span>
+                    </div>
+                    
+                    <!-- টাইটেল -->
+                    <h3 class="font-bold text-lg mb-2">${issue.title || 'Untitled'}</h3>
+                    
+                    <!-- ডেসক্রিপশন (... সহ) -->
+                    <p class="text-gray-600 text-sm mb-3">${issue.description?.substring(0, 60) || 'No description.'}...</p>
+                    
+                    <!-- লেবেল কালারফুল চিপস -->
+                    <div class="mb-4 flex flex-wrap gap-2">
+                        ${labelsHtml}
+                    </div>
+                    
+                    <!-- ফুটার: দুই লাইনে -->
+                    <div class="text-xs text-gray-500 border-t pt-3">
+                        <div class="font-medium mb-1">#${issue.id} by ${issue.author || 'unknown'}</div>
+                        <div>${formatDate(issue.createdAt)}</div>
+                    </div>
                 </div>
             </div>
-        </div>
-    `;
-}).join('');
+        `;
+    }).join('');
 
     // Attach click event to each card
     document.querySelectorAll('.issue-card').forEach(card => {
@@ -180,50 +192,61 @@ grid.innerHTML = filteredIssues.map(issue => {
     });
 }
 
-// লেবেল রেন্ডার করার ফাংশন (কালারফুল)
-function renderLabels(labels) {
-    if (!labels || labels.length === 0) return '';
-    
-    // লেবেলের জন্য রঙের ম্যাপিং
-    const labelColors = {
-        'bug': 'bg-red-100 text-red-800 border-red-200',
-        'help wanted': 'bg-blue-100 text-blue-800 border-blue-200',
-        'feature': 'bg-green-100 text-green-800 border-green-200',
-        'documentation': 'bg-purple-100 text-purple-800 border-purple-200',
-        'enhancement': 'bg-indigo-100 text-indigo-800 border-indigo-200',
-        'question': 'bg-yellow-100 text-yellow-800 border-yellow-200'
-    };
-    
-    return labels.map(label => {
-        const labelLower = label.toLowerCase();
-        const colorClass = labelColors[labelLower] || 'bg-gray-100 text-gray-800 border-gray-200';
-        return `
-            <span class="${colorClass} text-xs font-semibold px-3 py-1.5 rounded-full border">
-                ${label}
-            </span>
-        `;
-    }).join('');
-}
-
+// ==================== Modal (New Design) ====================
 function openModal(issueId) {
     const issue = allIssues.find(i => i.id == issueId);
     if (!issue) return;
 
+    const statusText = issue.status?.toLowerCase() === 'open' ? 'Opened' : 'Closed';
+    const labelsHtml = renderLabels(issue.labels);
+    const priorityColor = getPriorityColor(issue.priority);
+
     modalContent.innerHTML = `
-        <div class="space-y-3">
-            <p><strong class="text-gray-700">ID:</strong> ${issue.id}</p>
-            <p><strong class="text-gray-700">Title:</strong> ${issue.title}</p>
-            <p><strong class="text-gray-700">Description:</strong> ${issue.description}</p>
-            <p><strong class="text-gray-700">Status:</strong> ${issue.status}</p>
-            <p><strong class="text-gray-700">Labels:</strong> ${issue.labels?.join(', ') || 'N/A'}</p>
-            <p><strong class="text-gray-700">Priority:</strong> ${issue.priority}</p>
-            <p><strong class="text-gray-700">Author:</strong> ${issue.author}</p>
-            <p><strong class="text-gray-700">Assignee:</strong> ${issue.assignee || 'None'}</p>
-            <p><strong class="text-gray-700">Created At:</strong> ${formatDate(issue.createdAt)}</p>
-            <p><strong class="text-gray-700">Updated At:</strong> ${formatDate(issue.updatedAt)}</p>
+        <div class="space-y-4">
+            <!-- Title -->
+            <h2 class="text-xl font-bold text-gray-800">${issue.title}</h2>
+            
+            <!-- Status line: Opened by and date -->
+            <div class="flex items-center text-sm text-gray-600">
+                <span class="font-medium mr-2">${statusText}</span>
+                <span>by ${issue.author || 'unknown'}</span>
+                <span class="mx-2">•</span>
+                <span>${formatDate(issue.createdAt)}</span>
+            </div>
+            
+            <!-- Labels -->
+            <div class="flex flex-wrap gap-1">
+                ${labelsHtml}
+            </div>
+            
+            <!-- Description -->
+            <p class="text-gray-700 text-sm leading-relaxed">${issue.description || 'No description provided.'}</p>
+            
+            <!-- Assignee & Priority (two columns) -->
+            <div class="grid grid-cols-2 gap-4 border-t pt-4">
+                <div>
+                    <p class="text-xs text-gray-500 uppercase tracking-wider">Assignee</p>
+                    <p class="font-medium text-gray-800">${issue.assignee || 'Unassigned'}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-500 uppercase tracking-wider">Priority</p>
+                    <p class="font-medium" style="color: ${priorityColor};">${issue.priority?.toUpperCase() || 'N/A'}</p>
+                </div>
+            </div>
+            
+            <!-- Close button (optional, we already have X) -->
+            <div class="flex justify-end">
+                <button id="modal-close-btn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition">Close</button>
+            </div>
         </div>
     `;
+
     modal.classList.remove('hidden');
+
+    // Attach event to the new close button
+    document.getElementById('modal-close-btn')?.addEventListener('click', () => {
+        modal.classList.add('hidden');
+    });
 }
 
 // ==================== Event Listeners ====================
