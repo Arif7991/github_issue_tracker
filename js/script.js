@@ -14,10 +14,14 @@ const searchBtn = document.getElementById('search-btn');
 const modal = document.getElementById('issue-modal');
 const modalContent = document.getElementById('modal-content');
 
-
 // ==================== Utility Functions ====================
-function showLoading() { loadingSpinner.classList.remove('hidden'); }
-function hideLoading() { loadingSpinner.classList.add('hidden'); }
+function showLoading() {
+    loadingSpinner.classList.remove('hidden');
+}
+
+function hideLoading() {
+    loadingSpinner.classList.add('hidden');
+}
 
 function setActiveTab(tabId) {
     tabButtons.forEach(btn => {
@@ -36,10 +40,12 @@ function formatDate(dateString) {
     if (!dateString) return 'N/A';
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return 'N/A';
+    
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const year = date.getFullYear();
-    return `${day}/${month}/${year}`; 
+    
+    return `${day}/${month}/${year}`;
 }
 
 function getStatusBorderClass(status) {
@@ -47,15 +53,15 @@ function getStatusBorderClass(status) {
 }
 
 function getPriorityColor(priority) {
-    switch(priority?.toLowerCase()) {
-        case 'high': return '#ef4444'; 
-        case 'medium': return '#f59e0b'; 
-        case 'low': return '#10b981'; 
-        default: return '#6b7280'; 
+    switch (priority?.toLowerCase()) {
+        case 'high': return '#ef4444';
+        case 'medium': return '#f59e0b';
+        case 'low': return '#10b981';
+        default: return '#6b7280';
     }
 }
 
-// লেবেল কালারফুল চিপস
+// Render labels with color coding
 function renderLabels(labels) {
     if (!labels || labels.length === 0) return '';
     
@@ -105,6 +111,7 @@ async function searchIssues(query) {
         fetchIssues();
         return;
     }
+    
     showLoading();
     try {
         const response = await fetch(`${API_BASE_URL}/issues/search?q=${encodeURIComponent(query)}`);
@@ -148,15 +155,15 @@ function displayIssues() {
         const priorityColor = getPriorityColor(issue.priority);
         const labelsHtml = renderLabels(issue.labels);
         
-        // স্ট্যাটাস অনুযায়ী আইকন নির্বাচন
-        const statusIcon = issue.status?.toLowerCase() === 'open' 
-            ? '<img src="./assets/Open-Status.png" alt="Open" class="w-6 h-6">' 
+        // Status icon based on issue status
+        const statusIcon = issue.status?.toLowerCase() === 'open'
+            ? '<img src="./assets/Open-Status.png" alt="Open" class="w-6 h-6">'
             : '<img src="./assets/Closed- Status .png" alt="Closed" class="w-6 h-6">';
         
         return `
             <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition cursor-pointer issue-card" data-issue-id="${issue.id}">
                 <div class="border-t-4 ${getStatusBorderClass(issue.status)} p-4">
-                    <!-- প্রথম লাইন: স্ট্যাটাস আইকন (বামে) + প্রায়োরিটি (ডানে) -->
+                    <!-- Status Icon and Priority -->
                     <div class="flex justify-between items-center mb-3">
                         ${statusIcon}
                         <span class="text-xs font-bold uppercase px-2 py-1 rounded" 
@@ -165,18 +172,18 @@ function displayIssues() {
                         </span>
                     </div>
                     
-                    <!-- টাইটেল -->
+                    <!-- Title -->
                     <h3 class="font-bold text-lg mb-2">${issue.title || 'Untitled'}</h3>
                     
-                    <!-- ডেসক্রিপশন (... সহ) -->
+                    <!-- Description -->
                     <p class="text-gray-600 text-sm mb-3">${issue.description?.substring(0, 60) || 'No description.'}...</p>
                     
-                    <!-- লেবেল কালারফুল চিপস -->
+                    <!-- Labels -->
                     <div class="uppercase mb-4 flex flex-wrap gap-2">
                         ${labelsHtml}
                     </div>
                     
-                    <!-- ফুটার: দুই লাইনে -->
+                    <!-- Card Footer -->
                     <div class="text-xs text-gray-500 border-t pt-3">
                         <div class="font-medium mb-1">#${issue.id} by ${issue.author || 'unknown'}</div>
                         <div>${formatDate(issue.createdAt)}</div>
@@ -206,7 +213,7 @@ function openModal(issueId) {
             <!-- Title -->
             <h2 class="text-xl font-bold text-gray-800">${issue.title}</h2>
             
-            <!-- Status line: Opened by and date -->
+            <!-- Status line: Opened/Closed by and date -->
             <div class="flex items-center text-sm text-gray-600">
                 <span class="bg-green-700 text-white py-2 px-4 rounded-full font-medium mr-2">${statusText}</span>
                 <span>by ${issue.author || 'unknown'}</span>
@@ -223,8 +230,7 @@ function openModal(issueId) {
             <p class="text-gray-700 text-sm leading-relaxed">${issue.description || 'No description provided.'}</p>
             
             <!-- Assignee & Priority (two columns) -->
-            <div class="grid items-center grid-cols-2 gap-4 py-4 pl-3
-             bg-gray-100 ">
+            <div class="grid items-center grid-cols-2 gap-4 py-4 pl-3 bg-gray-100">
                 <div>
                     <p class="text-xs text-gray-500 tracking-wider">Assignee</p>
                     <p class="font-medium text-gray-800">${issue.assignee || 'Unassigned'}</p>
@@ -235,7 +241,7 @@ function openModal(issueId) {
                 </div>
             </div>
             
-            <!-- Close -->
+            <!-- Close Button -->
             <div class="flex justify-end">
                 <button id="modal-close-btn" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Close</button>
             </div>
@@ -244,13 +250,14 @@ function openModal(issueId) {
 
     modal.classList.remove('hidden');
 
-    // Attach event to the new close button
+    // Close button functionality
     document.getElementById('modal-close-btn')?.addEventListener('click', () => {
         modal.classList.add('hidden');
     });
 }
 
 // ==================== Event Listeners ====================
+// Tab click listeners
 tabButtons.forEach(btn => {
     btn.addEventListener('click', (e) => {
         const tabId = e.target.dataset.tab;
@@ -260,17 +267,18 @@ tabButtons.forEach(btn => {
     });
 });
 
+// Search button listener
 searchBtn.addEventListener('click', () => {
     searchQuery = searchInput.value;
     searchIssues(searchQuery);
 });
 
+// Enter key listener for search
 searchInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') searchBtn.click();
 });
 
-
-
+// Close modal when clicking outside
 window.addEventListener('click', (e) => {
     if (e.target === modal) modal.classList.add('hidden');
 });
